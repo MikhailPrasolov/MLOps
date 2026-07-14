@@ -266,7 +266,230 @@ jupyter lab
 
 ---
 
-## 7. Резюме
+## 7. Генерация корректных `.ipynb` с нуля
+
+> **Когда нужно:** обучающие ноутбуки по книге, туториалы, воспроизводимые примеры. Не «прогнал код и забыл», а **читаемая история с выполняемыми ячейками**.
+
+### 7.1. Почему `jupytext --to notebook` в **light format** ломает ноутбуки
+
+Если `.py` содержит обучающие комментарии в духе:
+
+```python
+def friends_of_friends(user):
+    ...
+
+# Пример: для Hero (id=0) — friends_of_friends({'id': 0}) = {3: 2}
+
+def mean(xs): ...
+
+# assert 7.33 < mean(num_friends) < 7.34
+```
+
+→ jupytext light format превращает строки `# Пример:` и `# assert X == Y` в **markdown-ячейки**. Функции определяются, но **никогда не вызываются**. Ноутбук в Jupyter выглядит «зелёным», никаких ошибок — но и никакого вывода. Тихая поломка.
+
+**Симптомы:**
+
+- `cells[5]` — markdown «Пример: для Hero...»
+- `cells[7]` — markdown «assert 7.33 < mean(...)»
+- `mean(num_friends)` нигде не вызывается → ничего не считается
+- `plt.savefig()` сработал, но без `display(Image(...))` графики не встроены
+
+Подробный разбор — в `30_Resources/Insights/jupytext-light-format-breaks-executable-comments.md` (Obsidian vault).
+
+### 7.2. Два корректных подхода
+
+| Подход | Когда | Sync | Контроль |
+|--------|-------|------|----------|
+| **percent format** (`# %%`) | Хочешь редактировать и `.py`, и `.ipynb` | ✅ автоматический через `jupytext --sync` | Средний (маркеры сам расставляешь) |
+| **`nbformat` напрямую** | Строишь ноутбук программно (обучающие, воспроизводимые) | ❌ одна сторона (`.ipynb`) | Полный (каждая ячейка в коде) |
+
+**Для обучающих ноутбуков (книга, туториал) рекомендую `nbformat`** — гарантирует, что вызовы будут.
+
+### 7.3. Шаблон: `nbformat` для обучающего ноутбука
+
+Каждая **секция = 3 ячейки** (markdown → def → call):
+
+```python
+import nbformat as nbf
+from nbformat.v4 import new_notebook, new_markdown_cell, new_code_cell
+
+nb = new_notebook()
+nb.metadata = {
+    "kernelspec": {"display_name": "Python 3 (mlops)",
+                   "language": "python", "name": "python3"},
+    "language_info": {"name": "python", "version": "3.13"},
+}
+
+cells = []
+
+# --- 1. Заголовок ---
+cells.append(new_markdown_cell(
+    "# Название ноутбука\n\n"
+    "**Книга:** ...\n"
+    "**Главы:** X + Y\n"
+))
+
+# --- 2. Setup ---
+cells.append(new_code_cell(
+    "import math\n"
+    "import os\n"
+    "import matplotlib\n"
+    "matplotlib.use('Agg')   # headless backend для скриптов и CI\n"
+    "import matplotlib.pyplot as plt\n"
+    "from IPython.display import Image, display\n"
+))
+
+# --- 3. СЕКЦИЯ: X.Y ---
+cells.append(new_markdown_cell(
+    "### X.Y. Название секции\n\n"
+    "Краткое пояснение (1-2 предложения)."
+))
+
+# Ячейка-определение
+cells.append(new_code_cell(
+    "def my_function(x):\n"
+    "    \"\"\"Docstring.\"\"\"\n"
+    "    return x * 2\n"
+))
+
+# Ячейка-вызов + проверка
+cells.append(new_code_cell(
+    "result = my_function(5)\n"
+    "print(f\"my_function(5) = {result}\")\n"
+    "\n"
+    "assert result == 10\n"
+    "print(\"[OK] X.Y\")\n"
+))
+
+# --- 4. ГРАФИКИ ---
+cells.append(new_code_cell(
+    "fig, ax = plt.subplots()\n"
+    "ax.plot([1, 2, 3], [1, 4, 9])\n"
+    "ax.set_title('Example')\n"
+    "\n"
+    "fpath = os.path.join(FIG_DIR, 'example.png')\n"
+    "plt.savefig(fpath, dpi=80, bbox_inches='tight')\n"
+    "plt.gca().clear()\n"
+    "display(Image(filename=fpath))   # ← КРИТИЧНО для встраивания\n"
+))
+
+nb["cells"] = cells
+nbf.write(nb, "out.ipynb")
+```
+
+### 7.4. Графики: `plt.savefig` + `display(Image(...))` (всегда оба)
+
+```python
+from IPython.display import Image, display
+
+# matplotlib.use('Agg') ОБЯЗАТЕЛЬНО для headless-режима
+# (если запускаешь через `jupyter nbconvert --execute`)
+
+fpath = os.path.join(FIG_DIR, "plot.png")
+plt.savefig(fpath, dpi=80, bbox_inches="tight")
+plt.gca().clear()            # очистить ось, чтобы следующий график не наложился
+display(Image(filename=fpath))   # ← без этого в ноутбуке будет пусто
+```
+
+**Где сохранять фигуры:**
+
+```python
+import os
+FIG_DIR = os.path.join(os.getcwd(), "_figures")   # рядом с .ipynb
+os.makedirs(FIG_DIR, exist_ok=True)
+```
+
+### 7.5. Шаблон: percent format (`# %%`)
+
+Если всё-таки хочешь sync `.py` ↔ `.ipynb`:
+
+```python
+# %% [markdown]
+# # Заголовок ноутбука
+# Краткое описание
+
+# %%
+import math
+
+# %% [markdown]
+# ## Секция 1
+
+# %%
+def foo(x):
+    """Определение."""
+    return x + 1
+
+# %%
+# Ячейка-вызов (отдельный `# %%` блок)
+result = foo(5)
+print(result)
+assert result == 6
+
+# %%
+import matplotlib.pyplot as plt
+plt.plot([1, 2, 3])
+plt.show()    # в .ipynb отобразится inline
+```
+
+**Конвертация:**
+
+```bash
+# Установить jupytext (один раз)
+pip install jupytext
+
+# Установить формат и сконвертировать
+jupytext --set-formats py:percent,ipynb my_notebook.py
+
+# После правок — синхронизировать
+jupytext --sync my_notebook.py
+```
+
+⚠️ **Не используй jupytext light format** (`jupytext --to notebook file.py` без `--from`) для обучающих ноутбуков — см. §8.1.
+
+### 7.6. Валидация: всегда `jupyter nbconvert --execute`
+
+```powershell
+conda activate mlops
+jupyter nbconvert --to notebook --execute my_notebook.ipynb `
+                  --output my_notebook.ipynb
+```
+
+- Если есть `AssertionError`, `KeyError`, `NameError` — увидишь traceback в выводе
+- Если всё OK — файл перезаписан с outputs (size растёт в ~2-4 раза)
+- Занимает 10-60 сек в зависимости от объёма
+
+### 7.7. Конкретный кейс: главы 1-5 книги «Data Science с нуля»
+
+В `MLOps/notebooks/Data Science/`:
+
+- `01-introduction-and-python-crash-course.ipynb` (54 cells) — гл. 1+2
+- `02-visualization-linear-algebra-statistics.ipynb` (50 cells, 10 PNG) — гл. 3+4+5
+
+**Как они были сделаны (и почему именно так):**
+
+1. **Сначала через `jupytext`** (light format) — **получили сломанные** ноутбуки (см. §8.1)
+2. **Перестроены через `nbformat`** в скрипте `build_nb0X.py` (полный контроль)
+3. **Каждая секция:** markdown (пояснение) → code (def) → code (вызов+print+assert)
+4. **Графики:** `plt.savefig()` + `display(Image(filename=...))` — встроены
+5. **Валидация:** `jupyter nbconvert --execute` прошёл без ошибок
+
+**Два бага, которые поймала валидация:**
+
+1. `evens_below_20` (генератор) — после `sum()` исчерпывается → `list(...)`
+2. `num_friends` (список) — моя копипаста имела 17 ones / 24 sixes (только 6 как mode), а книга — 22 / 22 (modes `{1, 6}`). Заменил на эталон из `scratch/statistics.py`.
+
+### 7.8. Чеклист перед коммитом обучающего ноутбука
+
+- [ ] Каждая функция **вызывается** в отдельной code-ячейке
+- [ ] Все `assert` — **реальный код**, не комментарии
+- [ ] Каждый `plt.savefig` сопровождается `display(Image(...))`
+- [ ] `Kernel → Restart & Run All` отрабатывает без ошибок
+- [ ] Размер ноутбука >50 КБ (значит outputs сохранены, графики встроены)
+- [ ] Frontmatter `## Итог` в конце с ссылками на следующие главы/темы
+
+---
+
+## 8. Резюме
 
 | Сценарий | Что делать |
 |----------|------------|
@@ -275,5 +498,6 @@ jupyter lab
 | Мелкая правка (1-2 ячейки) | Скинуть текст ячейки агенту, он скажет, что вставить |
 | Проверить, что не сломалось | `Kernel → Restart & Run All`, кинуть агенту traceback |
 | Потерял правки агента | Спросить: «покажи что ты менял» — он прочитает JSON и повторит |
+| **Строишь обучающий ноутбук с нуля** | **Сразу `nbformat` (§7). Не `jupytext --to notebook` в light format!** |
 
 **Золотое правило:** пока агент правит файл — Jupyter закрыт. Это сэкономит 30 минут на отладку «почему у меня опять старый код».
