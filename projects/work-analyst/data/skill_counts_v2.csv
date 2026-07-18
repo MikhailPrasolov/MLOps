@@ -1,37 +1,32 @@
-skill,count
+skill,count_word_boundary
 SQL,6234
 Python,3361
 Tableau,1550
 Excel,1429
-Google Analytics,1387
-REST API,1292
-A/B Testing,1259
 BI,1231
+Google Analytics,1069
+PostgreSQL,969
 ClickHouse,822
 ETL,813
-PostgreSQL,771
 Pandas,703
 Банки,699
-DWH,666
-CRM,601
+Power BI,592
 AppsFlyer,543
 Airflow,516
 Amplitude,499
 NumPy,487
-GTM,471
 BigQuery,468
-LTV,461
 1С,447
 Firebase,433
-KPI,370
+CRM,381
 Superset,325
 Kafka,324
 Hadoop,318
+KPI,303
 MySQL,296
-Git,294
 Spark,276
+REST API,269
 English,268
-ERP,249
 Retention,233
 Metabase,232
 AppMetrica,224
@@ -39,40 +34,36 @@ OLAP,177
 Redash,177
 Qlik,174
 Grafana,171
-Hive,170
+LTV,158
+scikit-learn,158
 SciPy,157
 MS SQL Server,154
 Docker,146
-CAC,142
+Git,145
+ERP,137
 Linux,135
 Mixpanel,134
-R,127
 MSSQL,124
 SAP,121
 ELT,117
-scikit-learn,104
+Google Ads,103
 Looker,103
+Kubernetes,97
 dbt,89
 MongoDB,87
-Kubernetes,82
-gRPC,65
 Qlik Sense,55
+R,52
 ROMI,44
 PyTorch,41
-Google Ads,37
 GraphQL,37
 Redshift,36
 OKR,36
 TensorFlow,29
 Snowflake,26
-myTarget,21
+CAC,24
 ROAS,18
-RabbitMQ,17
-Facebook Ads,14
+Яндекс.Direct,15
+A/B Testing,13
 Segment,12
-OLTP,12
 Когортный анализ,9
 Финансы,8
-Яндекс.Direct,4
-Data Vault,4
-Power BI,1

@@ -227,26 +227,25 @@ SKILLS = {
 
 
 def _extract_companies(text: str) -> Counter:
-    """Простой поиск имён компаний в тексте."""
+    """v2: поиск имён компаний с word boundaries (см. 06_recount)."""
     if not isinstance(text, str):
         return Counter()
-    low = text.lower()
     out = Counter()
     for needle, canonical in COMPANIES.items():
-        if needle in low:
+        pattern = r"\b" + re.escape(needle) + r"\b"
+        if re.search(pattern, text, flags=re.IGNORECASE):
             out[canonical] += 1
     return out
 
 
 def _extract_skills(text: str) -> Counter:
-    """Простой поиск имён скиллов в тексте (более строгий — нужен word boundary)."""
+    """v2: поиск скиллов с word boundaries (см. 06_recount)."""
     if not isinstance(text, str):
         return Counter()
-    low = " " + text.lower() + " "  # добавляем пробелы для word boundary
     out = Counter()
     for needle, canonical in SKILLS.items():
-        # используем простой substring — компактно и достаточно для наших целей
-        if needle in low:
+        pattern = r"\b" + re.escape(needle) + r"\b"
+        if re.search(pattern, text, flags=re.IGNORECASE):
             out[canonical] += 1
     return out
 
@@ -262,11 +261,13 @@ def main() -> int:
 
     lines: list[str] = []
     lines.append("=" * 70)
-    lines.append("ТОП-30 КОМПАНИЙ")
+    lines.append("ТОП-30 КОМПАНИЙ (v2 — word boundaries)")
     lines.append("=" * 70)
-    lines.append(f"Вакансий с хотя бы одной упомянутой компанией: "
-                 f"{df['text'].fillna('').apply(lambda t: any(k in t.lower() for k in COMPANIES)).sum():,} "
-                 f"({100 * df['text'].fillna('').apply(lambda t: any(k in t.lower() for k in COMPANIES)).sum() / len(df):.1f}%)")
+    # Считаем через lambda-функцию с _extract_companies (как в основном цикле)
+    has_company_count = df["text"].fillna("").apply(lambda t: bool(_extract_companies(t))).sum()
+    lines.append(f"Вакансий с хотя бы одной упомянутой компанией (\\b): {has_company_count:,} "
+                 f"({100 * has_company_count / len(df):.1f}%)")
+    lines.append("Сравнение v1 (substring) vs v2 (\\b): см. 06_recount_comparison.txt")
     lines.append("")
     for company, n in company_counter.most_common(30):
         bar = "#" * min(n // 3, 60)
@@ -278,7 +279,7 @@ def main() -> int:
     for text in df["text"].fillna(""):
         skill_counter.update(_extract_skills(text))
 
-    lines.append("## ТОП-40 СКИЛЛОВ")
+    lines.append("## ТОП-40 СКИЛЛОВ (v2 — word boundaries)")
     lines.append("")
     for skill, n in skill_counter.most_common(40):
         bar = "#" * min(n // 10, 60)
