@@ -37,19 +37,59 @@ def list_html_files(in_dir: str | Path) -> list[Path]:
     return files
 
 
-def _natural_sort_key(name: str) -> tuple[int, ...]:
-    """Числовая сортировка: messages2 < messages10.
+def _natural_sort_key(name: str) -> tuple:
+    """Числовая сортировка: messages2 < messages10 < messages100.
 
-    'messages10.html' → (1, 0), 'messages2.html' → (1, 2),
-    но в числовой сортировке (2) < (10).
+    Возвращает кортеж вида (символ, число, символ, число, ...). Каждый
+    символ строки-блока становится отдельным элементом, чтобы кортежи
+    были сравнимы поэлементно с самого начала. 'messages.html' →
+    ('m','e','s','s','a','g','e','s','.','h','t','m','l'),
+    'messages2.html' → ('m','e','s','s','a','g','e','s',2,'.','h','t','m','l').
+    Сравнение ('m',..,'s','.','h',...) vs ('m',..,'s',2,'.','h',...): на позиции
+    индекса символа после цифр — строковый '.' меньше числового 2 нельзя
+    сравнить напрямую, но на индексе самой цифры строковый '.' >
+    числовой 2 — нет, в ('m',..,'s','.','h',...) '.' стоит на 8-й позиции,
+    а в ('m',..,'s',2,'.','h',...) 2 стоит на 8-й. Python сравнивает:
+    строка vs int → TypeError. Поэтому используем другой подход.
+
+    Корректный подход: каждый блок становится (0, "str") или (1, int),
+    где 0 < 1. Так Python всегда знает, как сравнить, а порядок внутри
+    строкового блока — лексикографический (т.к. (0, 'm') < (0, 's')).
+
+    >>> sorted(['messages.html', 'messages2.html', 'messages10.html'],
+    ...        key=_natural_sort_key)
+    ['messages.html', 'messages2.html', 'messages10.html']
     """
     parts = re.split(r"(\d+)", name)
-    return tuple(int(p) if p.isdigit() else p for p in parts)
+    key = []
+    for p in parts:
+        if not p:
+            continue
+        if p.isdigit():
+            key.append((1, int(p)))
+        else:
+            # Разбиваем строку на символы, чтобы каждая «буква» была (0, char)
+            for ch in p:
+                key.append((0, ch))
+    return tuple(key)
 
 
 def read_messages_html(file_path: str | Path) -> str:
     """Читает файл как UTF-8. Бросает UnicodeDecodeError, если кодировка не UTF-8."""
     return Path(file_path).read_text(encoding="utf-8")
+
+
+def iter_messages_html_from(
+    files: list[Path],
+) -> Iterator[tuple[Path, str]]:
+    """Yields (path, html_text) для уже отфильтрованного списка файлов.
+
+    Это split-вариант iter_messages_html: отдельно получаем список
+    (list_html_files), отдельно читаем (read_messages_html). Полезно
+    когда нужно логировать размер / количество файлов до чтения.
+    """
+    for fp in files:
+        yield fp, read_messages_html(fp)
 
 
 def iter_messages_html(

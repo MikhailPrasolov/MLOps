@@ -1,0 +1,83 @@
+skill,count
+SQL,6453
+R,5216
+Python,3363
+Google Analytics,2449
+English,2291
+Банки,1848
+BI,1761
+Tableau,1551
+REST API,1487
+Excel,1473
+Финансы,1403
+A/B Testing,1289
+Git,1089
+Страхование,1061
+ETL,823
+ClickHouse,822
+PostgreSQL,771
+Pandas,703
+DWH,666
+CRM,609
+AppsFlyer,543
+ERP,534
+Воронка,530
+Airflow,516
+Amplitude,499
+1С,494
+NumPy,487
+GTM,471
+LTV,470
+BigQuery,470
+Firebase,433
+KPI,413
+Spark,360
+Superset,325
+Kafka,324
+Hadoop,318
+MySQL,296
+Qlik,289
+Retention,238
+Metabase,232
+AppMetrica,224
+OLAP,178
+Redash,177
+Hive,174
+Grafana,171
+SAP,157
+SciPy,157
+MS SQL Server,156
+ELT,149
+Docker,146
+CAC,145
+Unit-экономика,139
+Linux,135
+Mixpanel,134
+MSSQL,124
+scikit-learn,104
+Looker,104
+RabbitMQ,93
+dbt,89
+MongoDB,87
+Kubernetes,82
+Segment,79
+gRPC,65
+ROMI,56
+Qlik Sense,55
+PyTorch,41
+OKR,40
+Google Ads,39
+GraphQL,37
+Redshift,36
+TensorFlow,29
+Snowflake,26
+Немецкий,25
+myTarget,21
+ROAS,19
+Facebook Ads,14
+OLTP,12
+Яндекс.Метрика,9
+Когортный анализ,9
+Яндекс.Direct,4
+Data Vault,4
+Power BI,1

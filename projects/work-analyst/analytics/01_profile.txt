@@ -1,0 +1,98 @@
+======================================================================
+ПРОФИЛЬ VACANCIES.CSV
+Файл: C:\Users\Selecty\Desktop\GIT\MLOps\projects\work-analyst\data\processed\vacancies.csv
+Размер: 28.0 МБ
+======================================================================
+
+## 1. Структура (shape, dtypes)
+Строк: 10,095
+Колонок: 7
+date           object
+message_id      int64
+author         object
+text           object
+links          object
+tags           object
+source_file    object
+
+## 2. Пропуски (null counts)
+        nulls     %
+author    166  1.64
+links     660  6.54
+
+## 3. Cardinality (количество уникальных значений)
+  date           :  10,090 unique
+  message_id     :  10,095 unique
+  author         :   2,712 unique
+  text           :   8,021 unique
+  links          :   4,713 unique
+  tags           :   5,066 unique
+  source_file    :     196 unique
+
+## 4. Дата — диапазон
+  Невалидных date: 0
+  Min: 2016-09-21 13:35:02+00:00
+  Max: 2026-07-17 10:10:00+00:00
+  Span: 3585 дней (~9 лет)
+
+## 5. Длины текстов (chars)
+  text:    min=9, median=1534, mean=1571, p95=2754, max=5157
+  author:  max=73, unique=2712
+  tags:    max=416, median empty count=0
+  links:   with_links=9,435, empty=660
+
+## 6. Топ-10 авторов (по числу вакансий)
+    653  Deleted Account
+    170  Olga
+    166  (unknown)
+     91  Egor Vasilenko
+     86  Юлия
+     77  Анастасия
+     64  Мария
+     63  Анна
+     60  Алина Оленич
+     57  Kristina
+
+## 7. Топ-20 тегов
+    9614  #вакансия
+    3134  #аналитик
+    2484  #москва
+    2268  #fulltime
+    2170  #удаленка
+    1994  #analyst
+    1815  #vacancy
+    1640  #remote
+    1369  #job
+    1114  #middle
+    1041  #работа
+    1015  #офис
+     970  #senior
+     933  #системныйаналитик
+     900  #удаленно
+     869  #sql
+     616  #productanalyst
+     491  #продуктовыйаналитик
+     409  #гибрид
+     378  #системный_аналитик
+
+## 8. Топ-15 доменов ссылок
+    8253  t.me
+     560  hh.ru
+     308  search_hashtag
+     137  spb.hh.ru
+      79  www.notion.so
+      74  yandex.ru
+      64  docs.google.com
+      58  www.awg.ru
+      58  www.linkedin.com
+      48  bit.ly
+      48  clck.ru
+      47  www.ivi.ru
+      47  utorg.bamboohr.com
+      38  www.tinkoff.ru
+      37  profua.org
+
+## 9. Служебные
+  unique message_id: 10095
+  unique source_file: 196
+  total chars in text: 15,861,850
