@@ -22,7 +22,7 @@
 
 | Компонент | Значение |
 |-----------|----------|
-| Anaconda3 | 2025.12 (Python 3.13) — `C:\Users\Selecty\anaconda3` |
+| Anaconda3 | 2025.12 (Python 3.13) — `C:\Users\User\anaconda3` |
 | Conda env | `mlops` (Python 3.13.14) |
 | numpy / pandas / sklearn | 2.5.1 / 3.0.3 / 1.9.0 |
 | matplotlib / seaborn | 3.11.0 / 0.13.2 |
@@ -227,7 +227,7 @@ scratch OK: dot([1,2,3],[4,5,6]) = 32
 | Двойной клик `bootstrap.bat` повторно | **Безопасно** — `env update` (добавит только новые пакеты) |
 | `data_science_from_scratch/` — `git pull` | Через `pip install -e` изменения подхватываются автоматически |
 
-**Conda-окружение `mlops` живёт в `C:\Users\Selecty\anaconda3\envs\mlops\` — за пределами репозитория.** Git про него не знает.
+**Conda-окружение `mlops` живёт в `C:\Users\User\anaconda3\envs\mlops\` — за пределами репозитория.** Git про него не знает.
 
 ---
 
