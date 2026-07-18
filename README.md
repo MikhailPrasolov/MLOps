@@ -180,7 +180,7 @@ MLOps/                              ← твоя песочница
 
 ```powershell
 conda activate mlops
-cd C:\Users\Selecty\Desktop\GIT\MLOps
+cd C:\Users\User\Desktop\GIT\MLOps
 jupyter lab        # или jupyter notebook / spyder
 ```
 
