@@ -19,20 +19,19 @@ projects/work-analyst/
 ├── notebooks/
 │   └── parse_run.py         # CLI entry-point (Phase 1: ETL)
 ├── analytics/               # Phase 2: EDA — прогресс и выводы
-│   ├── 01_profile.py
-│   ├── 02_time_trends.py
-│   ├── 03_geo_seniority.py
-│   ├── 04_salary.py
-│   ├── 05_companies_skills.py
+│   ├── 01_profile.py            → 01_profile.txt
+│   ├── 02_time_trends.py        → 02_time_trends.txt
+│   ├── 03_geo_seniority.py      → 03_geo_seniority.txt
+│   ├── 04_salary.py             → 04_salary.txt
+│   ├── 05_companies_skills.py   → 05_companies_skills.txt
 │   ├── findings.md          # ← главный отчёт: TL;DR + 6 разделов + план
-│   ├── vacancies_with_salary.csv   # 28 МБ, с распарсенными зарплатами
-│   ├── skill_counts.csv
-│   ├── company_counts.csv
 │   └── figures/             # 14 PNG графиков
 ├── tests/
 │   └── test_parser.py       # pytest (25 тестов)
 ├── data/
-│   └── processed/           # vacancies.csv (output, 28 МБ)
+│   └── processed/
+│       ├── vacancies.csv              # 28.0 МБ — основной выход Phase 1
+│       └── vacancies_with_salary.csv  # 28.7 МБ — с распарсенными зарплатами (Phase 2)
 ├── logs/                    # parsing.log (WARNING+)
 ├── README.md
 └── requirements.txt
@@ -92,8 +91,16 @@ Service-сообщения (смена названия, конвертация 
 ## Что сделано
 
 - **Phase 1 ✅ (ETL)**: парсер Telegram-экспорта → 10 095 вакансий в `data/processed/vacancies.csv` (279 сек)
-- **Phase 2 ✅ (EDA)**: 5 скриптов анализа + 14 графиков + `findings.md` с TL;DR
+- **Phase 2 ✅ (EDA)**: 5 скриптов анализа + 5 текстовых отчётов + 14 графиков + `findings.md` с TL;DR
 - **Phase 3 (следующая)**: word boundaries, NER для зарплат, кластеризация вакансий, прогноз трендов
+
+### Конвенция EDA-вывода
+
+- `analytics/NN_<topic>.py` — скрипт анализа
+- `analytics/NN_<topic>.txt` — текстовый отчёт (тот же `NN_` префикс, рядом со скриптом)
+- `analytics/figures/*.png` — графики
+- `analytics/findings.md` — главный сводный отчёт
+- табличные CSV агрегаты (например, распарсенные зарплаты) — в `data/processed/`, а **не** в `analytics/`
 
 ### Главные выводы (Phase 2)
 
