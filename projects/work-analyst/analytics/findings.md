@@ -2,9 +2,9 @@
 
 > **Источник:** `data/processed/vacancies.csv` (10 095 вакансий, 2016–2026)
 > **Парсер:** `notebooks/parse_run.py` → см. `README.md`
-> **Скрипты анализа:** `analytics/01_profile.py` … `05_companies_skills.py`
+> **Скрипты анализа:** `analytics/01_profile.py` … `06_recount_with_boundaries.py`
 > **Графики:** `analytics/figures/`
-> **Обновлено:** 2026-07-18
+> **Обновлено:** 2026-07-18 (v2: word boundaries для компаний и скиллов)
 
 ---
 
