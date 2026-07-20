@@ -24,10 +24,6 @@ env/
 Thumbs.db
 .DS_Store
 
-# Data — keep only small samples, track large files with DVC or git-lfs
-data/*.csv
-!data/*.md
-
 # Environments
 .env
 *.env
